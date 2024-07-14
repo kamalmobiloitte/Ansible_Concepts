@@ -1,0 +1,2 @@
+dbuser: "{{enc_user}}"
+dbpass: "{{enc_pass}}"

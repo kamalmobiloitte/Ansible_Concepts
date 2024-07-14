@@ -1,0 +1,14 @@
+[webservers]
+websrv01 ansible_host=172.31.31.192 
+
+
+[dbservers]
+websrv02 ansible_host=172.31.23.127
+
+[webapp:children]
+webservers
+dbservers
+
+[webapp:vars]
+ansible_ssh_private_key_file=remote_loginkey.pem
+ansible_python_interpreter=/usr/bin/python3

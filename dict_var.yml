@@ -1,0 +1,8 @@
+# Dictionary varible
+inst_details:
+ web01: 
+  name: Project1
+  ami_id: ami-0885b1f6bd170450c
+ web02:
+   name: Project2
+   ami_id: ami-0be2609ba883822ec

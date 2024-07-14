@@ -1,0 +1,21 @@
+  - hosts: localhost
+    gather_facts: False
+    vars:
+      ami_id: "ami-0be2609ba883822ec"
+      region: "us-east-1"
+      security_group: "launch-wizard-8"
+    tasks:
+    - name: Create a new ec2 key pair, returns generated private key
+      ec2_key:
+        name: my_keypair
+        region: us-east-1
+      register: key_info
+    - name: Output the result 
+      debug:
+          var: key_info
+    - name: Copy using inline content
+      copy:
+        content: "{{key_info.key.private_key}}"
+        dest: ./remote_loginkey.pem
+        mode: 0600
+      when: key_info.changed

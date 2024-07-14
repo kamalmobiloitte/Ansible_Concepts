@@ -1,0 +1,50 @@
+- hosts: localhost
+  gather_facts: False
+  vars:
+      ami_id: "ami-0be2609ba883822ec"
+      region: "us-east-1"
+      security_group: "launch-wizard-8"
+      inst_details:
+          web01: 
+            name: Project1
+            ami_id: ami-0885b1f6bd170450c
+          web02:
+            name: Project2
+            ami_id: ami-0885b1f6bd170450c
+  tasks:    
+   - name: Provision a set of instances without dictionary
+     ec2:
+         key_name: my_keypair
+         group: "{{security_group}}"
+         instance_type: t2.micro
+         image:  "{{item.ami_id}}"
+         region: "{{region}}"
+         exact_count: 1
+         wait: true         
+         count_tag:
+            Name: "{{item.name}}"
+         instance_tags:
+            Name: "{{item.name}}"
+     loop:
+       - name: Project1
+         ami_id: ami-0885b1f6bd170450c
+       - name: Project2
+         ami_id: ami-0be2609ba883822ec
+     when: false
+
+   - name: Provision a set of instances  with dictionary
+     ec2:
+         key_name: my_keypair
+         group: "{{security_group}}"
+         instance_type: t2.micro
+         image:  "{{item.value.ami_id}}"
+         region: "{{region}}"
+         exact_count: 1
+         wait: true         
+         count_tag:
+            Name: "{{item.value.name}}"
+         instance_tags:
+            Name: "{{item.value.name}}"
+     loop: "{{ lookup('dict',inst_details) }}"
+      
+           

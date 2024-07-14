@@ -1,0 +1,31 @@
+- hosts: localhost
+  gather_facts: False
+  vars:
+      ami_id: "ami-0be2609ba883822ec"
+      region: "us-east-1"
+      security_group: "launch-wizard-8"
+  tasks:    
+   - name: Provision a set of instances
+     ec2:
+         key_name: Worker-Node-key
+         group: "{{security_group}}"
+         instance_type: t2.micro
+         image: "{{ami_id}}"
+         region: "{{region}}"
+         state: absent
+         instance_ids: "{{item}}"
+ #        exact_count: 1
+         wait: true         
+ #        count_tag:
+  #          Name: "{{item}}"
+   #      instance_tags:
+    #        Name: "{{item}}"
+     with_items:
+          - i-034bca8666d7a17bc
+          - i-0712f7d6948f8c948
+ #    loop:
+  #     - name: Project1
+   #      ami_id: ami-054e49cb26c2fd312
+    #   - name: Project2
+     #    ami_id: ami-0be2609ba883822ec
+           

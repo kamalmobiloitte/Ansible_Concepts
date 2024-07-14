@@ -1,0 +1,64 @@
+- name: Setup Database and restore the backup
+  hosts: webservers
+  become: yes
+  tasks:
+    - name: Install Mysql server and its dependencies
+      apt:
+        name: 
+          - mysql-server
+          - mysql-client
+          - python3-mysqldb
+          - libmysqlclient-dev
+        state: present
+        update_cache: yes        
+    
+    - name : Start and enable mysql service
+      service:
+        name: mysql
+        state: started
+        enabled: yes
+    
+    - name: Enable remote login to mysql service
+      lineinfile:
+         path: /etc/mysql/mysql.conf.d/mysqld.cnf
+         regexp: '^bind-address'
+         line: 'bind-address = 0.0.0.0'
+      notify:
+         - Restart-mysql
+# To verify this, use 'sudo mysql -u admin -p
+    - name: Add a db user
+      mysql_user:
+            name: "{{dbuser}}"
+            password: "{{dbpass}}"
+            priv: '*.*:ALL'
+            host: '%'
+            login_user: root
+            login_password: root           
+            state: present
+
+    - name: Create a new database 
+      mysql_db:
+            name: accounts
+            state: present
+            login_user: root
+            login_password: root 
+    
+    - name: copy the dump file 
+      copy:
+        src: dump.sql
+        dest: /tmp/dump.sql
+
+    - name: Restore database
+      mysql_db:
+        name: accounts
+        state: import
+        login_user: root
+        login_password: root 
+        target: /tmp/dump.sql
+
+  handlers:
+     - name: Restart-mysql
+       service:
+           name: mysql
+           state: restarted
+
